@@ -84,7 +84,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
     public interface onGetlocateListenner {
         void onGetSafeLocate();
-
         void onGeetUnSafeLocate();
     }
 
@@ -219,7 +218,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     bt_start.setBackgroundColor(Color.parseColor("#aaee4863"));
 
                 } else {
-                    line.setVisibility(View.VISIBLE);
+                    line.setVisibility(View.GONE);
 
                     mLocationController.start();
                     bt_start.setText("停 止");
