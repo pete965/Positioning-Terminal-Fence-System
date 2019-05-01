@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/mmap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></com.baidu.mapapi.map.MapView>
+        <LinearLayout
+            android:id="@+id/line"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentRight="true"
+            android:background="#aa918072"
+            android:visibility="gone"
+            >
+            <TextView
+                android:id="@+id/tv_longti"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="X:111111"/>
+            <TextView
+                android:id="@+id/tv_lati"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="Y:111111"/>
+            <TextView
+                android:id="@+id/tv_distance"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="DIS:11"/>
+            <TextView
+                android:id="@+id/tv_speed"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="SPE:11"/>
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="TIME:11"/>
+            <TextView
+                android:id="@+id/tv_thd"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="THD:11"/>
+            <TextView
+                android:id="@+id/tv_thv"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="THV:11"/>
+            <TextView
+                android:id="@+id/tv_ri"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="RI:11"/>
+            <TextView
+                android:id="@+id/tv_si"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="SI:11"/>
+            <TextView
+                android:id="@+id/tv_bdi"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="BDI:11"/>
+            <TextView
+                android:id="@+id/tv_bti"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="BTI:11"/>
+
+        </LinearLayout>
+        <Button
+            android:id="@+id/bt_config"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="50dp"
+            android:background="#aaf8b37f"
+            android:text="配置"/>
+        <LinearLayout
+            android:paddingLeft="140dp"
+            android:id="@+id/linearLayout_displayMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true">
+
+            <Button
+                android:id="@+id/bt_edit"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="50dp"
+                android:background="#aaee4863"
+                android:text="编 辑" />
+            <Button
+                android:id="@+id/bt_start"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_marginBottom="50dp"
+                android:background="#aaee4863"
+                android:text="开 始" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/linearLayout_editMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="140dp"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone">
+            <Button
+                android:id="@+id/bt_sure"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="50dp"
+                android:background="#aaf8b37f"
+                android:text="确 认" />
+            <Button
+                android:id="@+id/bt_clear"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_marginBottom="50dp"
+                android:background="#aaf8b37f"
+                android:text="清 空" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>
