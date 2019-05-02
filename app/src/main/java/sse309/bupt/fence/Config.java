@@ -9,7 +9,6 @@ public class Config {
     public static int n_threshouldspeed = 2; //幂函数指数大小 n为正偶数
     //统计系数相关参数
     public static double sigma = 30;
-    ;
     public static double miu = 0;
     //临界区大小
     public static double delta = 3;

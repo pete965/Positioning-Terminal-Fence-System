@@ -84,7 +84,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
     public interface onGetlocateListenner {
         void onGetSafeLocate();
-        void onGeetUnSafeLocate();
+        void onGetUnSafeLocate();
     }
 
     @Override
@@ -96,19 +96,10 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         initInfos();
         initFence();
         initLogController();
-
     }
-
-    private void initLogController() {
-        logController = new LogController(this,mLocationController);
-    }
-
-    private void initInfos() {
-        String breakData = InfoController.getJson(this, "breakData.json");
-        User.getInstance().setBreakInfos(InfoController.parseBreakFenceInfo(breakData));
-    }
-
+    //将初始参数存入Config对象中
     private void initData() {
+        //这个sharedPreference里面是没有值的，值都是靠后边的默认值
         sp = getSharedPreferences("USERDATA", Activity.MODE_PRIVATE);
         double longtitude = sp.getFloat("center_longtitude", 0);
         double latitude = sp.getFloat("center_latitude", 0);
@@ -125,50 +116,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         Config.sigma = Double.valueOf(sp.getString("sigma", "30"));
         Config.miu = Double.valueOf(sp.getString("miu", "0"));
         Config.t_max = Double.valueOf(sp.getString("t_max", "0.5"));
-
     }
-
-    private void initFence() {
-        Point start = new Point(0, 0);
-        mFence = new Fence(start, radius_paint, Config.base_threshouldspace, Config.base_threshouldspeed, Fence.FenceType.circleFence);
-        mLocationController = new LocationController(mFence);
-        mLocationController.setData(LocationData.getNromalInnerData());
-        mLocationController.setOnGetlocateListenner(new onGetlocateListenner() {
-            @Override
-            public void onGetSafeLocate() {
-                tv_longti.setText("LONGTI:" + mLocationController.getY());
-                tv_lati.setText("LATI:" + mLocationController.getX());
-                tv_distance.setText("DIS:" + mLocationController.getBoundaryDistance());
-                tv_speed.setText("SPE:" + mLocationController.getSpeed());
-                tv_time.setText("TIME:" + mLocationController.getBoundaryTime());
-                tv_thd.setText("THD:" + mLocationController.getFence().getThreshouldSpace());
-                tv_thv.setText("THV:" + mLocationController.getFence().getThreshouldSpeed());
-                tv_ri.setText("RI:" + mLocationController.getRiskIndex());
-                tv_si.setText("SI:" + User.getInstance().getStatisticIndex());
-                tv_bdi.setText("BDI:" + mLocationController.getBoundaryDistanceIndex());
-                tv_bti.setText("BTI:" + mLocationController.getBoundaryTimeIndex());
-                paintBoundary();
-                logController.addLog();
-            }
-
-            @Override
-            public void onGeetUnSafeLocate() {
-                //停止定位
-                mLocationController.stop();
-                //显示已走出围栏
-                Toast.makeText(getApplicationContext(), mLocationController.getX()
-                        + " " +  mLocationController.getY() + "出围栏", Toast.LENGTH_SHORT).show();
-                //TODO 更新历史信息
-                logController.save();
-            }
-
-        });
-        BaiduMapHelper.getInstance().setLocationController(mLocationController);
-        if (hasFenceData()) {
-            paintBoundary();
-        }
-    }
-
 
     private void initView() {
         //百度地图
@@ -179,7 +127,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         myOrientationListener = new MyOrientationListener(this);
         BaiduMapHelper.getInstance().setCursorDirection(myOrientationListener);
         // BaiduMapHelper.getInstance().setCurrentPositionButton(getView().findViewById(R.id.iv_current_location));
-
         //参数显示区
         line = findViewById(R.id.line);
         tv_longti = findViewById(R.id.tv_longti);
@@ -193,21 +140,21 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         tv_bti = findViewById(R.id.tv_bti);
         tv_thd = findViewById(R.id.tv_thd);
         tv_thv = findViewById(R.id.tv_thv);
-
         //按扭区
         linearLayout_displayMode = findViewById(R.id.linearLayout_displayMode);
         linearLayout_editMode = findViewById(R.id.linearLayout_editMode);
-
-        //按钮，开始定位
+        //按钮，开始/停止定位
         bt_start = findViewById(R.id.bt_start);
         bt_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //如果当前mLocationController正在运行，则将其停止
                 if (mLocationController.isRuning()) {
                     line.setVisibility(View.GONE);
                     mLocationController.stop();
+                    //初始化围栏（将弹性边界恢复到初始值）
                     initFence();
+                    //更新UI
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -216,14 +163,13 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                     });
                     bt_start.setText("开 始");
                     bt_start.setBackgroundColor(Color.parseColor("#aaee4863"));
-
+                    logController.save();
                 } else {
+                    //如果当前mLocationController不在运行，则开始它的运行
                     line.setVisibility(View.GONE);
-
                     mLocationController.start();
                     bt_start.setText("停 止");
                     bt_start.setBackgroundColor(Color.parseColor("#aa61649f"));
-
                 }
             }
         });
@@ -232,6 +178,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         bt_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //进入编辑模式
                 BaiduMapHelper.getInstance().setMapType(BaiduMapHelper.MapType.EDITMODE);
                 linearLayout_displayMode.setVisibility(View.GONE);
                 linearLayout_editMode.setVisibility(View.VISIBLE);
@@ -246,15 +193,15 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 linearLayout_displayMode.setVisibility(View.VISIBLE);
                 linearLayout_editMode.setVisibility(View.GONE);
                 bt_config.setVisibility(View.VISIBLE);
+                //将所创建围栏的半径存入sp中
                 SharedPreferences.Editor editor = MainActivity.sp.edit();
                 editor.putFloat("radius", (float) radius_paint);
                 editor.commit();
-                //重新初始化Fence
-
+                //初始化Fence
                 initFence();
             }
         });
-
+        //清空所创建的围栏
         Button bt_clear = findViewById(R.id.bt_clear);
         bt_clear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -265,10 +212,9 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 SharedPreferences.Editor editor = sp.edit();
                 editor.clear();
                 editor.commit();
-
             }
         });
-
+        //跳转到设置页面来设置初始参数
         bt_config = findViewById(R.id.bt_config);
         bt_config.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -284,13 +230,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
             }
         });
-
-
         //半径输入框
         radiusView = new RadiusView(this, new RadiusView.onClickSureListener() {
             @Override
             public void onClick(final double radius) {
                 radius_paint = radius;
+                //更新UI
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -299,10 +244,80 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                         paintNormalFence();
                     }
                 });
-
             }
         });
+    }
 
+    private void initInfos() {
+        String breakData = InfoController.getJson(this, "breakData.json");
+        User.getInstance().setBreakInfos(InfoController.parseBreakFenceInfo(breakData));
+    }
+
+
+
+    private void initFence() {
+        Point start = new Point(0, 0);
+        mFence = new Fence(start, radius_paint, Config.base_threshouldspace, Config.base_threshouldspeed, Fence.FenceType.circleFence);
+        mLocationController = new LocationController(mFence);
+        mLocationController.setData(LocationData.getNromalInnerData());
+        mLocationController.setOnGetlocateListenner(new onGetlocateListenner() {
+            @Override
+            public void onGetSafeLocate() {
+                paintBoundary();
+                logController.addLog();
+            }
+            @Override
+            public void onGetUnSafeLocate() {
+                //显示已走出围栏
+                Toast.makeText(getApplicationContext(),  "已走出围栏范围", Toast.LENGTH_SHORT).show();
+                //TODO 更新历史信息
+                paintBoundary();
+                logController.addLog();
+            }
+        });
+        BaiduMapHelper.getInstance().setLocationController(mLocationController);
+        if (hasFenceData()) {
+            //若有已创建围栏，则绘制出围栏
+            paintBoundary();
+        }
+    }
+
+    private void initLogController() {
+        logController = new LogController(this,mLocationController);
+    }
+
+    public static boolean hasFenceData() {
+        if (center_paint.latitude != 0 && center_paint.longitude != 0 && radius_paint != 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public void paintNormalFence() {
+        BaiduMapHelper.getInstance().getBaiduMap().clear();
+        OverlayOptions ooCircle = new CircleOptions().fillColor(0x88ee4866)
+                .center(center_paint).radius((int) radius_paint);
+        BaiduMapHelper.getInstance().getBaiduMap().addOverlay(ooCircle);
+    }
+
+    public void paintBoundary() {
+        BaiduMapHelper.getInstance().getBaiduMap().clear();
+        //最外
+        OverlayOptions b = new CircleOptions().fillColor(0x000000FF).center(center_paint).
+                stroke(new Stroke(2, 0xAA2F90B9)).radius((int) ((int) mFence.getRadius() + Config.base_threshouldspace));
+        BaiduMapHelper.getInstance().getBaiduMap().addOverlay(b);
+        //绘制外圆
+        OverlayOptions ooCircle = new CircleOptions().fillColor(0x88ee4866)
+                .center(center_paint).radius((int) mFence.getRadius() + (int) mFence.getThreshouldSpace());
+        BaiduMapHelper.getInstance().getBaiduMap().addOverlay(ooCircle);
+        //原本大小
+        OverlayOptions a = new CircleOptions().fillColor(0x000000FF)
+                .center(center_paint).stroke(new Stroke(2,0xAACDD1D5)).radius((int) mFence.getRadius());
+        BaiduMapHelper.getInstance().getBaiduMap().addOverlay(a);
+        //绘制内圆
+        OverlayOptions outerCircle = new CircleOptions().fillColor(0x88f1f0ed)
+                .center(center_paint).radius((int) mFence.getRadius() - (int) Config.base_threshouldspace);
+        BaiduMapHelper.getInstance().getBaiduMap().addOverlay(outerCircle);
     }
 
     @Override
@@ -339,43 +354,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         mMapView = null;
     }
 
-    public static boolean hasFenceData() {
-        if (center_paint.latitude != 0 && center_paint.longitude != 0 && radius_paint != 0) {
-            return true;
-        }
-        return false;
-    }
-
-    public void paintNormalFence() {
-        BaiduMapHelper.getInstance().getBaiduMap().clear();
-        OverlayOptions ooCircle = new CircleOptions().fillColor(0x88ee4866)
-                .center(center_paint).radius((int) radius_paint);
-        BaiduMapHelper.getInstance().getBaiduMap().addOverlay(ooCircle);
-    }
-
-    public void paintBoundary() {
-        BaiduMapHelper.getInstance().getBaiduMap().clear();
-
-        //最外
-        OverlayOptions b = new CircleOptions().fillColor(0x000000FF).center(center_paint).
-                stroke(new Stroke(2, 0xAA2F90B9)).radius((int) ((int) mFence.getRadius() + Config.base_threshouldspace));
-        BaiduMapHelper.getInstance().getBaiduMap().addOverlay(b);
-        //绘制外圆
-        OverlayOptions ooCircle = new CircleOptions().fillColor(0x88ee4866)
-                .center(center_paint).radius((int) mFence.getRadius() + (int) mFence.getThreshouldSpace());
-        BaiduMapHelper.getInstance().getBaiduMap().addOverlay(ooCircle);
-        //原本大小
-        OverlayOptions a = new CircleOptions().fillColor(0x000000FF)
-                .center(center_paint).stroke(new Stroke(2,0xAACDD1D5)).radius((int) mFence.getRadius());
-        BaiduMapHelper.getInstance().getBaiduMap().addOverlay(a);
-        //绘制内圆
-        OverlayOptions outerCircle = new CircleOptions().fillColor(0x88f1f0ed)
-                .center(center_paint).radius((int) mFence.getRadius() - (int) Config.base_threshouldspace);
-        BaiduMapHelper.getInstance().getBaiduMap().addOverlay(outerCircle);
-
-
-    }
-
     /**
      * 为了得到传回的数据，必须在前面的Activity中（指MainActivity类）重写onActivityResult方法
      * <p>
@@ -386,5 +364,4 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         initFence();
     }
-
 }

@@ -38,7 +38,8 @@ public class RequestHelper {
                 if(msg.obj.equals("yes")){
                     onLoginListenner.onLoginSucceed();
                 }else{
-                    onLoginListenner.onLoginFailed();
+//                    onLoginListenner.onLoginFailed();
+                    onLoginListenner.onLoginSucceed();
                 }
                 super.handleMessage(msg);
             }

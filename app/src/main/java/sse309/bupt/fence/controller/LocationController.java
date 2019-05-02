@@ -51,7 +51,6 @@ public class LocationController {
     private void init() {
         //计算统计系数
         User.getInstance().setStatisticIndex(IndexController.cacalateStatisticIndex());
-
         //初始化危险系数
         riskIndex = IndexController.caculateRiskIndex(User.getInstance().getStatisticIndex(),
                 boundaryTimeIndex, boundaryDistanceIndex);
@@ -109,7 +108,6 @@ public class LocationController {
     public void start() {
         isRuning = true;
         //读取坐标，模拟定位
-
     }
 
     public void stop() {
@@ -192,10 +190,9 @@ public class LocationController {
             //计算阈值
             fence.setThreshouldSpace(IndexController.caculateThreshouldSpace(riskIndex));
             fence.setThreshouldSpeed(IndexController.caculateThreshouldSpeed(riskIndex));
-
             onGetlocateListenner.onGetSafeLocate();
         } else {
-            onGetlocateListenner.onGeetUnSafeLocate();
+            onGetlocateListenner.onGetUnSafeLocate();
         }
 
     }
@@ -247,5 +244,12 @@ public class LocationController {
     public double getRiskIndex() {
         return riskIndex;
     }
+
+public boolean getIsInBoundary(){
+    return this.isInBoundary;
+}
+public boolean getIsInBoundaryLast(){
+        return this.isInBoundaryLast;
+}
 }
 
