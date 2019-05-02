@@ -3,6 +3,7 @@ package sse309.bupt.fence.util;
 import android.util.Log;
 
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.DistanceUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -46,19 +47,11 @@ public class Util {
      * @param fence 电子围栏
      * @return
      */
-    public static boolean   isInFence(LocationPoint point, Fence fence) {
-        if (fence.getType() == Fence.FenceType.circleFence) {
-            boolean isInSpace = Math.sqrt(Math.pow(point.getY() -
-                    fence.getCenterPoint().getLongtitude(), 2) +
-                    Math.pow(point.getX() - fence.getCenterPoint().getLatitude(), 2)) <
-                    fence.getRadius() + fence.getThreshouldSpace();
-            Log.i("log",isInSpace+" ");
-            boolean isInSpeed = point.getSpeed() < fence.getThreshouldSpeed();
-            if (!isInSpace && !isInSpeed) {
-                return false;
-            }
-        }
-        return true;
+
+    public static boolean isInFence(LocationPoint point,Fence fence){
+        double distance=DistanceUtil.getDistance(new LatLng(point.getX(),point.getY()),new LatLng(fence.getCenterPoint().getLatitude(),fence.getCenterPoint().getLongtitude()));
+        boolean isInSpace=distance<(fence.getRadius()+fence.getThreshouldSpace());
+        return isInSpace;
     }
 
     /**

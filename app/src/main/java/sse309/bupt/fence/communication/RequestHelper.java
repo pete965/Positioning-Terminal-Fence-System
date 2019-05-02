@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 import sse309.bupt.fence.activity.LoginActivity;
 import sse309.bupt.fence.activity.SignupActivity;
@@ -28,7 +29,9 @@ public class RequestHelper {
     static String result="";
     private LoginActivity.onLoginListenner onLoginListenner;
     private SignupActivity.onSignupListener onSignupListener;
+    //登录方法，通过与后端的交互来进行登录成功的跳转或登录失败的提示
     public void login(final String username,final String password){
+        //通过handler实现子进程与主进程的通信，在主进程中进行判断并触发回调方法
         final Handler handler=new Handler(){
             @Override
             public void handleMessage(Message msg) {
@@ -40,21 +43,25 @@ public class RequestHelper {
                 super.handleMessage(msg);
             }
         };
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
+                    //封装并发送请求
                     LoginEntity loginEntity=new LoginEntity(password,username);
                     Gson gson=new Gson();
                     String json=gson.toJson(loginEntity);
                     OkHttpClient mOkHttpClient=new OkHttpClient();
                     RequestBody formBody=RequestBody.create(MediaType.parse("application/json; charset=utf-8"),json);
                     Request request = new Request.Builder().url(url+"/fence/interface/user/login").post(formBody).build();
+                    //阻塞式接收response并处理response body
                     Response response=mOkHttpClient.newCall(request).execute();
                     String responseData=response.body().string();
                     JSONObject jsonObject1=new JSONObject(responseData);
                     JSONObject jsonObject2=jsonObject1.getJSONObject("content");
                     output=jsonObject2.getString("output");
+                    //将返回值发送给主进程
                     Message message=handler.obtainMessage();
                     message.obj=output;
                     handler.sendMessage(message);
@@ -63,8 +70,8 @@ public class RequestHelper {
                 }
             }
         }).start();
-
     }
+    //注册方法，通过与后端的交互来进行注册成功的跳转或注册失败的提示
     public void signUp(final String username, final String password){
         final Handler handler=new Handler(){
             @Override
@@ -100,6 +107,15 @@ public class RequestHelper {
             }
         }).start();
     }
+    public void sendLocation(double Lat, double Lng, Date date){
+
+    }
+
+
+
+
+
+
     public void setOnLoginListenner(LoginActivity.onLoginListenner onLoginListenner) {
         this.onLoginListenner = onLoginListenner;
     }

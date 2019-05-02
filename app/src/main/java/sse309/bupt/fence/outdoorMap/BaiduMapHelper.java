@@ -33,6 +33,7 @@ import java.util.Date;
 import sse309.bupt.fence.R;
 import sse309.bupt.fence.activity.MainActivity;
 import sse309.bupt.fence.bean.LocationPoint;
+import sse309.bupt.fence.communication.RequestHelper;
 import sse309.bupt.fence.controller.LocationController;
 import sse309.bupt.fence.util.Util;
 
@@ -226,6 +227,9 @@ public class BaiduMapHelper {
             //获取经纬度信息
             double latitude = loc.getLatitude();
             double longtitude = loc.getLongitude();
+            Date date=new Date();
+            RequestHelper requestHelper=new RequestHelper();
+            requestHelper.sendLocation(latitude,longtitude,date);
             latLng = new LatLng(latitude, longtitude);
             Log.i("point", "latitude = " + latitude + "longitude = " + longtitude);
 
@@ -260,14 +264,8 @@ public class BaiduMapHelper {
             mBaiduMap.setMyLocationConfigeration(new MyLocationConfiguration(
                     MyLocationConfiguration.LocationMode.NORMAL, true, null));
             if (locationController.isRuning()) {
-                LatLng center_x = new LatLng(MainActivity.center_paint.latitude, 0);
-                LatLng center_y = new LatLng(0, MainActivity.center_paint.longitude);
-                LatLng new_x = new LatLng(latitude, 0);
-                LatLng new_y = new LatLng(0, longtitude);
-                double x = DistanceUtil.getDistance(center_x, new_x);
-                double y = DistanceUtil.getDistance(center_y, new_y);
                 double speed;
-                LocationPoint locationPoint = new LocationPoint(x, y, 0, new Date());
+                LocationPoint locationPoint = new LocationPoint(latitude, longtitude, 0, date);
                 if (locationController.getLastPoint() == null) {
                     speed = 0;
                 } else {
@@ -275,10 +273,8 @@ public class BaiduMapHelper {
                     locationPoint.setSpeed(speed);
                 }
                 //TODO 在这里持久化 发送
-
                 locationController.dealLocation(locationPoint);
                 locationController.setLastPoint(locationPoint);
-
             }
         }
     }
