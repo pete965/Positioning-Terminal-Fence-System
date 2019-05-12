@@ -29,5 +29,4 @@ public class trapzoidal_integral {
         }
         return result;
     }
-
 }

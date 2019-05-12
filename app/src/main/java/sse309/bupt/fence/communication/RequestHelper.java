@@ -21,10 +21,11 @@ import java.util.Date;
 
 import sse309.bupt.fence.activity.LoginActivity;
 import sse309.bupt.fence.activity.SignupActivity;
+import sse309.bupt.fence.bean.LocationEntity;
 import sse309.bupt.fence.bean.LoginEntity;
 
 public class RequestHelper {
-    String url="http://192.168.1.111:8080";
+    String url="http://10.28.206.109:8080";
     static String output="";
     static String result="";
     private LoginActivity.onLoginListenner onLoginListenner;
@@ -36,10 +37,10 @@ public class RequestHelper {
             @Override
             public void handleMessage(Message msg) {
                 if(msg.obj.equals("yes")){
+                    LoginEntity.setUser(username);
                     onLoginListenner.onLoginSucceed();
                 }else{
-//                    onLoginListenner.onLoginFailed();
-                    onLoginListenner.onLoginSucceed();
+                    onLoginListenner.onLoginFailed();
                 }
                 super.handleMessage(msg);
             }
@@ -108,15 +109,29 @@ public class RequestHelper {
             }
         }).start();
     }
-    public void sendLocation(double Lat, double Lng, Date date){
+    public void sendLocation(final double Lat, final double Lng, final String username){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    LocationEntity locationEntity=new LocationEntity(username,Lng,Lat);
+                    Gson gson=new Gson();
+                    String json=gson.toJson(locationEntity);
+                    OkHttpClient mOkHttpClient=new OkHttpClient();
+                    RequestBody formBody=RequestBody.create(MediaType.parse("application/json; charset=utf-8"),json);
+                    Request request = new Request.Builder().url(url+"/fence/interface/user/updateLocation").post(formBody).build();
+                    Response response=mOkHttpClient.newCall(request).execute();
+                    String responseData=response.body().string();
+                    JSONObject jsonObject=new JSONObject(responseData);
+                }catch (Exception E){
+                    E.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    public void sendAlarm(String fenceId, String userId, Date date){
 
     }
-
-
-
-
-
-
     public void setOnLoginListenner(LoginActivity.onLoginListenner onLoginListenner) {
         this.onLoginListenner = onLoginListenner;
     }

@@ -33,6 +33,7 @@ import java.util.Date;
 import sse309.bupt.fence.R;
 import sse309.bupt.fence.activity.MainActivity;
 import sse309.bupt.fence.bean.LocationPoint;
+import sse309.bupt.fence.bean.LoginEntity;
 import sse309.bupt.fence.communication.RequestHelper;
 import sse309.bupt.fence.controller.LocationController;
 import sse309.bupt.fence.util.Util;
@@ -227,9 +228,10 @@ public class BaiduMapHelper {
             //获取经纬度信息
             double latitude = loc.getLatitude();
             double longtitude = loc.getLongitude();
+            String username= LoginEntity.getUser();
             Date date=new Date();
             RequestHelper requestHelper=new RequestHelper();
-            requestHelper.sendLocation(latitude,longtitude,date);
+            requestHelper.sendLocation(latitude,longtitude,username);
             latLng = new LatLng(latitude, longtitude);
             Log.i("point", "latitude = " + latitude + "longitude = " + longtitude);
 

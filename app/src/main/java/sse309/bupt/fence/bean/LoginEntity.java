@@ -3,8 +3,17 @@ package sse309.bupt.fence.bean;
 public class LoginEntity {
     private String password;
     private String username;
+    private static String user;
 
-    public LoginEntity(String pswd,String unm){
+    public static String getUser() {
+        return user;
+    }
+
+    public static void setUser(String user) {
+        LoginEntity.user = user;
+    }
+
+    public LoginEntity(String pswd, String unm){
         this.password=pswd;
         this.username=unm;
     }
