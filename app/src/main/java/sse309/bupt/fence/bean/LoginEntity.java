@@ -13,6 +13,9 @@ public class LoginEntity {
         LoginEntity.user = user;
     }
 
+    public LoginEntity(){
+
+    }
     public LoginEntity(String pswd, String unm){
         this.password=pswd;
         this.username=unm;

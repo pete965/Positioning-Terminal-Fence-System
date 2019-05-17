@@ -185,11 +185,11 @@ public class LocationController {
             caculateBoundaryTime();
             boundaryTimeIndex = IndexController.caculateBoundaryTimeIndex(boundaryTime);
             //计算危险系数
+            User.getInstance().setStatisticIndex(0.0);
             riskIndex = IndexController.caculateRiskIndex(User.getInstance().getStatisticIndex(),
                     boundaryDistanceIndex, boundaryTimeIndex);
             //计算阈值
             fence.setThreshouldSpace(IndexController.caculateThreshouldSpace(riskIndex));
-            fence.setThreshouldSpeed(IndexController.caculateThreshouldSpeed(riskIndex));
             onGetlocateListenner.onGetSafeLocate();
         } else {
             onGetlocateListenner.onGetUnSafeLocate();

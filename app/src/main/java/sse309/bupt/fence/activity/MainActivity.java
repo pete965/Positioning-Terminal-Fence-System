@@ -33,8 +33,11 @@ import sse309.bupt.fence.Config;
 import sse309.bupt.fence.R;
 import sse309.bupt.fence.RadiusView;
 import sse309.bupt.fence.bean.Fence;
+import sse309.bupt.fence.bean.LocationEntity;
+import sse309.bupt.fence.bean.LoginEntity;
 import sse309.bupt.fence.bean.Point;
 import sse309.bupt.fence.bean.User;
+import sse309.bupt.fence.communication.RequestHelper;
 import sse309.bupt.fence.controller.LocationController;
 import sse309.bupt.fence.controller.LogController;
 import sse309.bupt.fence.core.InfoController;
@@ -70,6 +73,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     public static SharedPreferences sp;
     public static JSONArray array = new JSONArray();
     private LogController logController;
+    private static boolean in;
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -193,6 +197,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 linearLayout_displayMode.setVisibility(View.VISIBLE);
                 linearLayout_editMode.setVisibility(View.GONE);
                 bt_config.setVisibility(View.VISIBLE);
+                //TODO 发送请求创建围栏
                 //将所创建围栏的半径存入sp中
                 SharedPreferences.Editor editor = MainActivity.sp.edit();
                 editor.putFloat("radius", (float) radius_paint);
@@ -212,6 +217,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 SharedPreferences.Editor editor = sp.edit();
                 editor.clear();
                 editor.commit();
+                //TODO 发送请求清空围栏
             }
         });
         //跳转到设置页面来设置初始参数
@@ -227,7 +233,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                         finish();
                     }
                 });
-
             }
         });
         //半径输入框
@@ -256,13 +261,20 @@ public class MainActivity extends Activity implements View.OnTouchListener {
 
 
     private void initFence() {
-        Point start = new Point(0, 0);
+        Point start = new Point(center_paint.longitude,center_paint.latitude);
         mFence = new Fence(start, radius_paint, Config.base_threshouldspace, Config.base_threshouldspeed, Fence.FenceType.circleFence);
         mLocationController = new LocationController(mFence);
         mLocationController.setData(LocationData.getNromalInnerData());
         mLocationController.setOnGetlocateListenner(new onGetlocateListenner() {
             @Override
             public void onGetSafeLocate() {
+                Toast.makeText(getApplicationContext(),  "已走入围栏范围", Toast.LENGTH_SHORT).show();
+                if(!in){
+                    LoginEntity loginEntity=new LoginEntity();
+                    String username=LoginEntity.getUser();
+                    RequestHelper.addInAlarm(username,"In",mFence.get);
+                }
+                in=true;
                 paintBoundary();
                 logController.addLog();
             }
@@ -270,6 +282,10 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             public void onGetUnSafeLocate() {
                 //显示已走出围栏
                 Toast.makeText(getApplicationContext(),  "已走出围栏范围", Toast.LENGTH_SHORT).show();
+                if(in){
+                    RequestHelper.addOutAlarm();
+                }
+                in=false;
                 //TODO 更新历史信息
                 paintBoundary();
                 logController.addLog();

@@ -25,11 +25,18 @@ import sse309.bupt.fence.bean.LocationEntity;
 import sse309.bupt.fence.bean.LoginEntity;
 
 public class RequestHelper {
-    String url="http://10.28.206.109:8080";
+    String url="http://10.128.230.249:8080";
     static String output="";
     static String result="";
     private LoginActivity.onLoginListenner onLoginListenner;
     private SignupActivity.onSignupListener onSignupListener;
+
+    public static void addInAlarm() {
+    }
+
+    public static void addOutAlarm() {
+    }
+
     //登录方法，通过与后端的交互来进行登录成功的跳转或登录失败的提示
     public void login(final String username,final String password){
         //通过handler实现子进程与主进程的通信，在主进程中进行判断并触发回调方法

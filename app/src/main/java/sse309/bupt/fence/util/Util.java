@@ -5,12 +5,15 @@ import android.util.Log;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import sse309.bupt.fence.bean.Fence;
 import sse309.bupt.fence.bean.LocationPoint;
+
+import static android.content.ContentValues.TAG;
 
 public class Util {
     /**
@@ -51,6 +54,8 @@ public class Util {
     public static boolean isInFence(LocationPoint point,Fence fence){
         double distance=DistanceUtil.getDistance(new LatLng(point.getX(),point.getY()),new LatLng(fence.getCenterPoint().getLatitude(),fence.getCenterPoint().getLongtitude()));
         boolean isInSpace=distance<(fence.getRadius()+fence.getThreshouldSpace());
+        BigDecimal shortDistance=new BigDecimal(distance+"");
+        Log.i(TAG,"Boyang"+"pointLat:"+point.getX()+"pointLong:"+point.getY()+"centerLat:"+fence.getCenterPoint().getLatitude()+"centerLong:"+fence.getCenterPoint().getLongtitude());
         return isInSpace;
     }
 
