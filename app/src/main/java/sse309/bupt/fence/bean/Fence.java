@@ -16,6 +16,50 @@ public class Fence {
     private double threshouldSpeed;
     private FenceType type;
     private LocationController locationController;
+    private static Point center;
+    private static double r;
+    private static boolean online;
+
+    public static boolean isOnline() {
+        return online;
+    }
+
+    public static void setOnline(boolean online) {
+        Fence.online = online;
+    }
+
+
+
+    public static Point getCenter() {
+        return center;
+    }
+
+    public static void setCenter(Point center) {
+        Fence.center = center;
+    }
+
+    public static double getR() {
+        return r;
+    }
+
+    public static void setR(double r) {
+        Fence.r = r;
+    }
+
+
+    public static String getFenceName() {
+        return fenceName;
+    }
+
+    public static void setFenceName(String fenceName) {
+        Fence.fenceName = fenceName;
+    }
+
+    private static String fenceName;
+
+    public Fence(){
+
+    }
 
     public Fence(Point centerPoint, double radius, double threshouldSpace, double threshouldSpeed, FenceType type) {
         this.centerPoint = centerPoint;

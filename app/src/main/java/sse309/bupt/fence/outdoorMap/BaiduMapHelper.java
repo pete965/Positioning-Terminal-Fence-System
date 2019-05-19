@@ -32,6 +32,7 @@ import java.util.Date;
 
 import sse309.bupt.fence.R;
 import sse309.bupt.fence.activity.MainActivity;
+import sse309.bupt.fence.bean.Fence;
 import sse309.bupt.fence.bean.LocationPoint;
 import sse309.bupt.fence.bean.LoginEntity;
 import sse309.bupt.fence.communication.RequestHelper;
@@ -231,7 +232,7 @@ public class BaiduMapHelper {
             String username= LoginEntity.getUser();
             Date date=new Date();
             RequestHelper requestHelper=new RequestHelper();
-            requestHelper.sendLocation(latitude,longtitude,username);
+            if(new Fence().isOnline()){requestHelper.sendLocation(latitude,longtitude,username);}
             latLng = new LatLng(latitude, longtitude);
             Log.i("point", "latitude = " + latitude + "longitude = " + longtitude);
 

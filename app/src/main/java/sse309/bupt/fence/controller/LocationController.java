@@ -32,6 +32,20 @@ public class LocationController {
     private boolean isRuning = false;
     private MainActivity.onGetlocateListenner onGetlocateListenner;
 
+    public LocationController(){
+
+    }
+
+    public static boolean isStart() {
+        return start;
+    }
+
+    public static void setStart(boolean start) {
+        LocationController.start = start;
+    }
+
+    private static boolean start=false;
+
     /**
      * @param fence 电子围栏实实例
      */
@@ -107,12 +121,14 @@ public class LocationController {
 
     public void start() {
         isRuning = true;
+        setStart(false);
         //读取坐标，模拟定位
     }
 
     public void stop() {
         System.out.println("xxx stop");
         isRuning = false;
+        setStart(false);
         //停止读取坐标
     }
 

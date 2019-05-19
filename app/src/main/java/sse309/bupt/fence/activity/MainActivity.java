@@ -47,6 +47,7 @@ import sse309.bupt.fence.outdoorMap.MyOrientationListener;
 
 public class MainActivity extends Activity implements View.OnTouchListener {
     private Fence mFence;
+    private String fenceName;
     private LocationController mLocationController;
     private MyOrientationListener myOrientationListener;
     private MapView mMapView;
@@ -95,6 +96,12 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        Intent intent=getIntent();
+//        fenceName=intent.getStringExtra("fenceName");
+//        mFence.setFenceName(fenceName);
+//        if(!new Fence().isOnline()){
+//            bt_edit.setVisibility(View.GONE);
+//        }
         initData();
         initView();
         initInfos();
@@ -107,8 +114,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         sp = getSharedPreferences("USERDATA", Activity.MODE_PRIVATE);
         double longtitude = sp.getFloat("center_longtitude", 0);
         double latitude = sp.getFloat("center_latitude", 0);
-        center_paint = new LatLng(latitude, longtitude);
-        radius_paint = sp.getFloat("radius", 0);
+        if(mFence.isOnline()){
+            center_paint=new LatLng(mFence.getCenter().getLatitude(),mFence.getCenter().getLongtitude());
+            radius_paint = mFence.getR();
+        }else{
+            center_paint = new LatLng(latitude, longtitude);
+            radius_paint = sp.getFloat("radius", 0);
+        }
+
         Config.n_threshouldspace = sp.getInt("n_threshouldspace", 2);
         Config.n_threshouldspeed = sp.getInt("n_threshouldspeed", 2);
         Config.n_time = sp.getInt("n_time", 2);
@@ -228,7 +241,8 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        new Fence().setOnline(false);
                         startActivity(intent);
                         finish();
                     }
@@ -268,27 +282,34 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         mLocationController.setOnGetlocateListenner(new onGetlocateListenner() {
             @Override
             public void onGetSafeLocate() {
-                Toast.makeText(getApplicationContext(),  "已走入围栏范围", Toast.LENGTH_SHORT).show();
-                if(!in){
-                    LoginEntity loginEntity=new LoginEntity();
-                    String username=LoginEntity.getUser();
-                    RequestHelper.addInAlarm(username,"In",mFence.get);
+                if(mLocationController.isRuning()){
+                    if(!in){
+                        Toast.makeText(getApplicationContext(),  "已走入围栏范围", Toast.LENGTH_SHORT).show();
+                        LoginEntity loginEntity=new LoginEntity();
+                        String username=LoginEntity.getUser();
+                        String fencename=mFence.getFenceName();
+                        RequestHelper requestHelper=new RequestHelper();
+                        requestHelper.addAlarm(username,"In",fencename);
+                    }
+                    in=true;
+                    paintBoundary();
+                    logController.addLog();
                 }
-                in=true;
-                paintBoundary();
-                logController.addLog();
             }
             @Override
             public void onGetUnSafeLocate() {
-                //显示已走出围栏
-                Toast.makeText(getApplicationContext(),  "已走出围栏范围", Toast.LENGTH_SHORT).show();
-                if(in){
-                    RequestHelper.addOutAlarm();
+                if(mLocationController.isRuning()){
+                    //显示已走出围栏
+                    if(in){
+                        Toast.makeText(getApplicationContext(),  "已走出围栏范围", Toast.LENGTH_SHORT).show();
+                        String username=LoginEntity.getUser();
+                        RequestHelper requestHelper=new RequestHelper();
+                        requestHelper.addAlarm(username,"Out",mFence.getFenceName());
+                    }
+                    in=false;
+                    paintBoundary();
+                    logController.addLog();
                 }
-                in=false;
-                //TODO 更新历史信息
-                paintBoundary();
-                logController.addLog();
             }
         });
         BaiduMapHelper.getInstance().setLocationController(mLocationController);

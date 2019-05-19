@@ -87,7 +87,7 @@
             android:layout_marginRight="20dp"
             android:layout_marginBottom="50dp"
             android:background="#aaf8b37f"
-            android:text="配置"/>
+            android:text="退出"/>
         <LinearLayout
             android:paddingLeft="140dp"
             android:id="@+id/linearLayout_displayMode"

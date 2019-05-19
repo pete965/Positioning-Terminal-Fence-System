@@ -21,12 +21,14 @@ import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
 import sse309.bupt.fence.R;
+import sse309.bupt.fence.bean.Fence;
 import sse309.bupt.fence.communication.RequestHelper;
 
 public class LoginActivity extends Activity implements EasyPermissions.PermissionCallbacks {
     private static final int RC_CAMERA_AND_WIFI = 123;
     private Button bt_login;
     private Button bt_signup;
+    private Button bt_algorithm;
     private EditText username;
     private EditText password;
 
@@ -46,12 +48,32 @@ public class LoginActivity extends Activity implements EasyPermissions.Permissio
         password=findViewById(R.id.password);
         //检查并请求权限
         checkPermission();
-        //设置本页标题
-        initToolrbar();
         //Date date = new Date();
         //Log.i("sun",date.getTime()+"");
         jumpToSignUp();
         jumpToMainActivity();
+        jumpToAlgorithm();
+    }
+
+    private void jumpToAlgorithm() {
+        bt_algorithm = findViewById(R.id.bt_algorithm);
+        bt_algorithm.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Fence fence=new Fence();
+                        fence.setFenceName("Offline");
+                        fence.setOnline(false);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+
+            }
+        });
     }
 
     private void jumpToMainActivity() {
@@ -66,7 +88,9 @@ public class LoginActivity extends Activity implements EasyPermissions.Permissio
                         requestHelper.setOnLoginListenner(new onLoginListenner() {
                             @Override
                             public void onLoginSucceed() {
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, FencechooseActivity.class);
+                                Toast.makeText(getApplicationContext(), "登录成功，请稍候", Toast.LENGTH_SHORT).show();
+                                new Fence().setOnline(true);
                                 startActivity(intent);
                                 finish();
                             }
@@ -99,11 +123,6 @@ public class LoginActivity extends Activity implements EasyPermissions.Permissio
 
             }
         });
-    }
-
-    private void initToolrbar() {
-        Toolbar toolbar = this.findViewById(R.id.toolbar);
-        toolbar.setTitle("登录");
     }
 
     /**
