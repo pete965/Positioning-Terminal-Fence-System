@@ -88,7 +88,7 @@ public class SignupActivity extends Activity implements EasyPermissions.Permissi
 
     private void initToolrbar() {
         Toolbar toolbar = this.findViewById(R.id.toolbar);
-        toolbar.setTitle("注册");
+        toolbar.setTitle("Register to E-Fence System");
     }
 
 

@@ -89,7 +89,7 @@ public class LoginActivity extends Activity implements EasyPermissions.Permissio
                             @Override
                             public void onLoginSucceed() {
                                 Intent intent = new Intent(LoginActivity.this, FencechooseActivity.class);
-                                Toast.makeText(getApplicationContext(), "登录成功，请稍候", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Successfully, please wait", Toast.LENGTH_SHORT).show();
                                 new Fence().setOnline(true);
                                 startActivity(intent);
                                 finish();
@@ -97,7 +97,7 @@ public class LoginActivity extends Activity implements EasyPermissions.Permissio
 
                             @Override
                             public void onLoginFailed() {
-                                Toast.makeText(getApplicationContext(), "用户名或密码错误", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Wrong login information", Toast.LENGTH_SHORT).show();
                             }
                         });
                         requestHelper.login(username.getText().toString(),password.getText().toString());

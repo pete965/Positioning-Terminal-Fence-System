@@ -75,6 +75,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     public static JSONArray array = new JSONArray();
     private LogController logController;
     private static boolean in;
+    private boolean first=true;
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -178,14 +179,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                             paintBoundary();
                         }
                     });
-                    bt_start.setText("开 始");
+                    bt_start.setText("START");
                     bt_start.setBackgroundColor(Color.parseColor("#aaee4863"));
                     logController.save();
                 } else {
                     //如果当前mLocationController不在运行，则开始它的运行
                     line.setVisibility(View.GONE);
                     mLocationController.start();
-                    bt_start.setText("停 止");
+                    bt_start.setText("STOP");
                     bt_start.setBackgroundColor(Color.parseColor("#aa61649f"));
                 }
             }
@@ -283,13 +284,16 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             @Override
             public void onGetSafeLocate() {
                 if(mLocationController.isRuning()){
-                    if(!in){
-                        Toast.makeText(getApplicationContext(),  "已走入围栏范围", Toast.LENGTH_SHORT).show();
+                    if(!in||first){
+                        Toast.makeText(getApplicationContext(),  "Now in the fence", Toast.LENGTH_SHORT).show();
                         LoginEntity loginEntity=new LoginEntity();
                         String username=LoginEntity.getUser();
                         String fencename=mFence.getFenceName();
-                        RequestHelper requestHelper=new RequestHelper();
-                        requestHelper.addAlarm(username,"In",fencename);
+                        if(mFence.isOnline()){
+                            RequestHelper requestHelper=new RequestHelper();
+                            requestHelper.addAlarm(username,"In",fencename);
+                        }
+                        first=false;
                     }
                     in=true;
                     paintBoundary();
@@ -300,11 +304,14 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             public void onGetUnSafeLocate() {
                 if(mLocationController.isRuning()){
                     //显示已走出围栏
-                    if(in){
-                        Toast.makeText(getApplicationContext(),  "已走出围栏范围", Toast.LENGTH_SHORT).show();
+                    if(in||first){
+                        Toast.makeText(getApplicationContext(),  "Now out of the fence", Toast.LENGTH_SHORT).show();
                         String username=LoginEntity.getUser();
-                        RequestHelper requestHelper=new RequestHelper();
-                        requestHelper.addAlarm(username,"Out",mFence.getFenceName());
+                        if(mFence.isOnline()){
+                            RequestHelper requestHelper=new RequestHelper();
+                            requestHelper.addAlarm(username,"Out",mFence.getFenceName());
+                        }
+                        first=false;
                     }
                     in=false;
                     paintBoundary();

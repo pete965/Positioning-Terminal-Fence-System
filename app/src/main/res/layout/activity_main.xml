@@ -87,7 +87,7 @@
             android:layout_marginRight="20dp"
             android:layout_marginBottom="50dp"
             android:background="#aaf8b37f"
-            android:text="退出"/>
+            android:text="Exit"/>
         <LinearLayout
             android:paddingLeft="140dp"
             android:id="@+id/linearLayout_displayMode"
@@ -105,14 +105,14 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="50dp"
                 android:background="#aaee4863"
-                android:text="编 辑" />
+                android:text="Edit" />
             <Button
                 android:id="@+id/bt_start"
                 android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:layout_marginBottom="50dp"
                 android:background="#aaee4863"
-                android:text="开 始" />
+                android:text="Start" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/linearLayout_editMode"
@@ -131,14 +131,14 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="50dp"
                 android:background="#aaf8b37f"
-                android:text="确 认" />
+                android:text="Sure" />
             <Button
                 android:id="@+id/bt_clear"
                 android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:layout_marginBottom="50dp"
                 android:background="#aaf8b37f"
-                android:text="清 空" />
+                android:text="Clear" />
         </LinearLayout>
 
 

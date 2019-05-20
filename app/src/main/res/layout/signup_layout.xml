@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="40dp"
-            android:text="用户名"/>
+            android:text="Username"/>
         <EditText
             android:id="@+id/username1"
             android:layout_width="match_parent"
@@ -32,7 +32,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="密     码"
+            android:text="Password"
             android:textSize="40dp" />
 
         <EditText
@@ -47,12 +47,12 @@
         android:layout_width="200dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:text="注   册" />
+        android:text="Register" />
     <Button
         android:id="@+id/bt_back"
         android:layout_width="200dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:text="返   回" />
+        android:text="Back" />
 
 </LinearLayout>

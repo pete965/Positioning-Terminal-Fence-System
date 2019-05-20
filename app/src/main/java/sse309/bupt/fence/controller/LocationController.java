@@ -66,7 +66,7 @@ public class LocationController {
         //计算统计系数
         User.getInstance().setStatisticIndex(IndexController.cacalateStatisticIndex());
         //初始化危险系数
-        riskIndex = IndexController.caculateRiskIndex(User.getInstance().getStatisticIndex(),
+        riskIndex = IndexController.caculateRiskIndex(0.0,
                 boundaryTimeIndex, boundaryDistanceIndex);
 
         //初始化阈值
